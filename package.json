@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "private": true,
   "scripts": {
-    "build": "echo \"no build step\""
+    "build": "echo no build"
   },
   "dependencies": {
     "@capacitor/android": "^6.1.2",
