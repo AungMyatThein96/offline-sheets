@@ -1,43 +1,75 @@
-name: Build APK
+
+name: Build Offline Sheets APK
+
 on:
   push:
-    branches: [ main ]
+    branches:
+      - main
   workflow_dispatch:
+
+permissions:
+  contents: read
 
 jobs:
   build:
+    name: Build Android Debug APK
     runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
 
-      - name: Setup Node
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          node-version: 20
 
-      - name: Setup Java
+      - name: Set up Java
         uses: actions/setup-java@v4
         with:
-          distribution: 'temurin'
-          java-version: '17'
+          distribution: temurin
+          java-version: 17
 
-      - name: Install deps
+      - name: Set up Android SDK
+        uses: android-actions/setup-android@v3
+
+      - name: Verify existing web app
+        run: |
+          test -f www/index.html || {
+            echo "ERROR: www/index.html is missing"
+            exit 1
+          }
+          test -f capacitor.config.json || {
+            echo "ERROR: capacitor.config.json is missing"
+            exit 1
+          }
+
+      - name: Install project dependencies
         run: npm install
 
-      - name: Add Android platform
-        run: npx cap add android
+      - name: Ensure Capacitor Android dependencies
+        run: |
+          npm install @capacitor/core@6 @capacitor/android@6 @capacitor/cli@6
 
-      - name: Sync web assets & plugins
+      - name: Create Android project if missing
+        run: |
+          if [ ! -d android ]; then
+            npx cap add android
+          fi
+
+      - name: Sync web app to Android
         run: npx cap sync android
 
       - name: Build debug APK
         working-directory: android
         run: |
           chmod +x gradlew
-          ./gradlew assembleDebug --no-daemon
+          ./gradlew assembleDebug
 
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
-          name: offline-sheets-debug
+          name: offline-sheets-debug-apk
           path: android/app/build/outputs/apk/debug/app-debug.apk
+          if-no-files-found: error
+          retention-days: 14
