@@ -1,9 +1,6 @@
+
 {
-  "appId": "com.yourname.offlinesheets",
+  "appId": "com.aungmyatthein.offlinesheets",
   "appName": "Offline Sheets",
-  "webDir": "www",
-  "bundledWebRuntime": false,
-  "android": {
-    "allowMixedContent": false
-  }
+  "webDir": "www"
 }
