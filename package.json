@@ -2,16 +2,18 @@
   "name": "offline-sheets",
   "version": "1.0.0",
   "private": true,
+  "description": "Offline spreadsheet app packaged for Android with Capacitor",
   "scripts": {
-    "build": "echo no build"
+    "build": "node scripts/verify-web.js",
+    "android:add": "cap add android",
+    "android:sync": "cap sync android",
+    "android:open": "cap open android"
   },
   "dependencies": {
-    "@capacitor/android": "^6.1.2",
-    "@capacitor/core": "^6.1.2",
-    "@capacitor/filesystem": "^6.0.1",
-    "@capacitor/share": "^6.0.2"
+    "@capacitor/android": "6.2.1",
+    "@capacitor/core": "6.2.1"
   },
   "devDependencies": {
-    "@capacitor/cli": "^6.1.2"
+    "@capacitor/cli": "6.2.1"
   }
 }
