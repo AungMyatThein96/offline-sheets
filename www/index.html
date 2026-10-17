@@ -37,6 +37,34 @@ td.s{box-shadow:inset 0 0 0 100px var(--sel)}td.a{outline:2px solid var(--ac);ou
 <div id="fb"><input id=nb title="Name box (type a name to name the selection)"><b style="padding:3px">fx</b><input id=fx></div>
 <div id="gw"><div id="in"><table id="g"></table><div id=im></div><div id=ac hidden></div><input id=ed hidden></div></div>
 <div id="ch"></div><div id="tabs"></div><div id="st"></div><div id="pv"></div><div id="dlg"></div>
+
+  <script type="module">
+import { Filesystem, Directory, Encoding } from '@capacitor/filesystem';
+import { Share } from '@capacitor/share';
+
+window.saveNativeFile = async (filename, content) => {
+  try {
+    let data = content, isB64 = false;
+    if (content instanceof Blob) {
+      const bytes = new Uint8Array(await content.arrayBuffer());
+      let bin = '';
+      for (let i = 0; i < bytes.byteLength; i++) bin += String.fromCharCode(bytes[i]);
+      data = btoa(bin);
+      isB64 = true;
+    }
+    const res = await Filesystem.writeFile({
+      path: filename,
+      data,
+      directory: Directory.Cache,
+      encoding: isB64 ? undefined : Encoding.UTF8
+    });
+    await Share.share({ title: filename, url: res.uri, dialogTitle: 'Save or share' });
+  } catch (e) {
+    alert('Save failed: ' + e.message);
+  }
+};
+</script>
+  
 <script>
 const $=s=>document.querySelector(s),NC=40,NR=200;
 let S={sheets:[{n:'Sheet1',c:{},w:{},cf:[],ch:[]}],a:0,names:{}},sel={r1:1,c1:1,r2:1,c2:1},undo=[],redo=[],clip=null,editing=false,zoom=1,cache=new Map(),stack=new Set(),AST={};
@@ -172,7 +200,7 @@ mut(()=>rows.forEach((row,i)=>row.forEach((v,j)=>{if(q.r1+i>NR||q.c1+j>NC)return
 function csv(t,d){t=t.replace(/^\ufeff/,'');const R=[];let r=[],f='',q=false;for(let i=0;i<t.length;i++){const ch=t[i];if(q){if(ch==='"'){if(t[i+1]==='"'){f+='"';i++}else q=false}else f+=ch}else if(ch==='"')q=true;else if(ch===d){r.push(f);f=''}else if(ch==='\n'||ch==='\r'){if(ch==='\r'&&t[i+1]==='\n')i++;r.push(f);R.push(r);r=[];f=''}else f+=ch}if(f!==''||r.length){r.push(f);R.push(r)}return R}
 function ask(t,fs,cb){const d=$('#dlg');d.innerHTML='<b>'+t+'</b>'+fs.map(f=>`<label>${f[0]}<input value="${esc(f[1]||'')}"></label>`).join('')+'<div><button id=ok>OK</button><button id=no>Cancel</button></div>';d.classList.add('o');const ins=d.querySelectorAll('input');ins[0].focus();ins[0].select();
 $('#ok').onclick=()=>{d.classList.remove('o');cb(...[...ins].map(i=>i.value))};$('#no').onclick=()=>d.classList.remove('o');d.onkeydown=e=>{if(e.key==='Enter')$('#ok').click();if(e.key==='Escape')$('#no').click()}}
-const dl=(n,t,m)=>{const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([t],{type:m}));a.download=n;a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1e3)};
+const dl=(n,t,m)=>{if(window.Capacitor&&window.Capacitor.isNativePlatform()&&window.saveNativeFile){window.saveNativeFile(n,t);return}const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([t],{type:m}));a.download=n;a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1e3)};
 const sty=o=>mut(()=>each(k=>{const c=cell(k);c.f={...c.f,...o}})),cur=()=>sh().c[key(sel.r1,sel.c1)]?.f||{},tog=p=>sty({[p]:!cur()[p]});
 function shiftC(ax,at,d){const s=sh(),n={};for(const k in s.c){const m=/([A-Z]+)(\d+)/.exec(k);let c=nc(m[1]),r=+m[2];if(ax==='r'){if(d<0&&r===at)continue;if(r>=at)r+=d}else{if(d<0&&c===at)continue;if(c>=at)c+=d}if(r>=1&&c>=1)n[key(r,c)]=s.c[k]}s.c=n}
 function sortR(dir){const s=sh();let{r1,r2,c1,c2}=rect();if(r1===r2&&c1===c2){const ks=Object.keys(s.c);if(!ks.length)return;r1=1;c1=1;r2=Math.max(...ks.map(k=>+k.replace(/\D/g,'')));c2=Math.max(...ks.map(k=>nc(k.replace(/\d/g,''))))}
