@@ -25,6 +25,9 @@ td.s{box-shadow:inset 0 0 0 100px var(--sel)}td.a{outline:2px solid var(--ac);ou
 #rh div{position:absolute;pointer-events:none;box-sizing:border-box;border:2px solid;z-index:1}
 #hint{position:fixed;z-index:20;background:var(--bg);border:1px solid var(--ac);border-radius:4px;padding:4px 8px;box-shadow:0 4px 14px rgba(0,0,0,.25);max-width:min(480px,92vw);font-size:12px}#hint b{background:var(--ac);color:#fff;border-radius:3px;padding:0 3px}#hint i{display:block;opacity:.7}
 #afo{position:absolute;z-index:6;display:flex;gap:2px;background:var(--bg);border:1px solid var(--bd);padding:2px;border-radius:4px;box-shadow:0 2px 8px rgba(0,0,0,.2)}#afo[hidden]{display:none}#afo button{padding:1px 6px}button.on{background:var(--ac);color:#fff}
+td{touch-action:none}#gw.ts td{touch-action:auto}
+td.nt{position:relative}td.nt::after{content:"";position:absolute;right:0;top:0;border-style:solid;border-width:0 9px 9px 0;border-color:transparent #d93025 transparent transparent}
+#nbx{position:absolute;z-index:7;background:#ffffe1;color:#000;border:1px solid #888;box-shadow:2px 2px 8px rgba(0,0,0,.3);padding:2px}#nbx textarea{width:190px;min-height:60px;background:transparent;border:0;resize:both;font:12px system-ui;color:#000;outline:0;padding:2px}
 #pv{display:none;--bg:#fff;--fg:#000;--bd:#999;color:#000;background:#fff}
 @media print{*{-webkit-print-color-adjust:exact;print-color-adjust:exact}body>*:not(#pv){display:none!important}html,body{height:auto;overflow:visible;display:block}#pv{display:block}#pv table{border-collapse:collapse}#pv td{border:0}#pv.gl td{border:1px solid #999}}
 </style></head><body>
@@ -35,12 +38,12 @@ td.s{box-shadow:inset 0 0 0 100px var(--sel)}td.a{outline:2px solid var(--ac);ou
 <button data-a=l title="Align left">⇤</button><button data-a=ce title=Center>⇔</button><button data-a=r title="Align right">⇥</button><button data-a=bd title=Borders>▦</button><button data-a=wr title="Wrap text">↵</button>
 <select id=nf title="Number format"><option value="">General</option><option value="0.00">0.00</option><option value="#,##0">1,000</option><option value="$">Currency</option><option value="%">Percent</option><option value="date">Date</option><option value="@">Text</option></select>
 <button data-a=ri>+Row</button><button data-a=ci>+Col</button><button data-a=rd>−Row</button><button data-a=cd>−Col</button><button data-a=wid>Width</button>
-<button data-a=fd title="Fill down (Ctrl+D)">Fill↓</button><button data-a=fr title="Fill right (Ctrl+R)">Fill→</button><button data-a=smode title="Touch screens: drag to select cells">Select mode</button><button data-a=sa title="Sort A→Z">A↑</button><button data-a=sd title="Sort Z→A">Z↓</button><button data-a=find>Find</button><button data-a=cf>Cond. fmt</button><button data-a=nt>Note</button><button data-a=chart>Chart</button>
+<button data-a=fd title="Fill down (Ctrl+D)">Fill↓</button><button data-a=fr title="Fill right (Ctrl+R)">Fill→</button><button data-a=smode title="Off (default): drag one finger to select cells; two fingers or the row/column headers scroll. On: one finger scrolls, press-and-hold then drag selects.">Touch scroll</button><button data-a=sa title="Sort A→Z">A↑</button><button data-a=sd title="Sort Z→A">Z↓</button><button data-a=find>Find</button><button data-a=cf>Cond. fmt</button><button data-a=nt>Note</button><button data-a=chart>Chart</button>
 <button data-a=zm>−</button><button data-a=zp>+</button><button data-a=theme>☾</button><button data-a=pg>Page setup</button><button data-a=print>Print</button><button data-a=pdf>Save PDF</button><button data-a=pic>Picture</button>
 <button data-a=open>Open</button><button data-a=xlsx>Save .xlsx</button><button data-a=csv>Save .csv</button><button data-a=json>Backup .json</button><button data-a=nsh>+Sheet</button><button data-a=dsh>−Sheet</button><input type=file id=fi accept=".xlsx,.csv,.tsv,.txt,.json" hidden><input type=file id=pf accept="image/*" hidden>
 </div>
 <div id="fb"><input id=nb title="Name box (type a name to name the selection)"><b style="padding:3px">fx</b><input id=fx></div>
-<div id="gw"><div id="in"><table id="g"></table><div id=im></div><div id=rh></div><div id=sb hidden><i class=fh title="Drag to auto-fill (double-click to fill down)"></i></div><div id=afo hidden></div><input id=ed hidden></div></div>
+<div id="gw"><div id="in"><table id="g"></table><div id=im></div><div id=rh></div><div id=nbx hidden><textarea placeholder="Note"></textarea></div><div id=sb hidden><i class=fh title="Drag to auto-fill (double-click to fill down)"></i></div><div id=afo hidden></div><input id=ed hidden></div></div>
 <div id="ch"></div><div id="tabs"></div><div id="st"></div><div id=ac hidden></div><div id=hint hidden></div><div id="pv"></div><div id="dlg"></div>
 <script>
 const $=s=>document.querySelector(s),NC=40,NR=200;
@@ -132,7 +135,7 @@ function css(ce,v,s,r,c){const f=(ce&&ce.f)||{};let o='';if(f.b)o+='font-weight:
 let bg=f.bg;for(const q of s.cf||[]){const g=pr(q.rg);if(r>=g.r1&&r<=g.r2&&c>=g.c1&&c<=g.c2&&v!==''&&compare(v,isNaN(q.val)?q.val:+q.val,q.op)===true)bg=q.bg}
 if(bg)o+='background:'+bg+';';if(f.tx&&TX[f.tx])o+=TX[f.tx](f.tk||'#1a73e8');o+='text-align:'+(f.al||(typeof v==='number'?'right':v instanceof E?'center':'left'))+';';if(f.wr)o+='white-space:normal;';if(f.bd)o+='box-shadow:inset 0 0 0 1px #000;';return o}
 function render(){cache=new Map();const s=sh();let h='<colgroup><col style="width:40px">';for(let c=1;c<=NC;c++)h+=`<col style="width:${s.w[c]||90}px">`;h+='</colgroup><thead><tr><th class=cr></th>';for(let c=1;c<=NC;c++)h+=`<th data-c=${c}>${cn(c)}</th>`;h+='</tr></thead><tbody>';
-for(let r=1;r<=NR;r++){h+=`<tr><th data-r=${r}>${r}</th>`;for(let c=1;c<=NC;c++){const k=key(r,c),ce=s.c[k],v=getVal(S.a,k);h+=`<td id=${k} data-r=${r} data-c=${c} style="${css(ce,v,s,r,c)}"${ce&&ce.n?' title="'+esc(ce.n)+'"':''}>${esc(fmt(v,ce))}</td>`}h+='</tr>'}
+for(let r=1;r<=NR;r++){h+=`<tr><th data-r=${r}>${r}</th>`;for(let c=1;c<=NC;c++){const k=key(r,c),ce=s.c[k],v=getVal(S.a,k);h+=`<td id=${k} data-r=${r} data-c=${c} style="${css(ce,v,s,r,c)}"${ce&&ce.n?' class=nt title="'+esc(ce.n)+'"':''}>${esc(fmt(v,ce))}</td>`}h+='</tr>'}
 $('#g').innerHTML=h+'</tbody>';paintSel();$('#tabs').innerHTML=S.sheets.map((z,i)=>`<span class="${i==S.a?'on':''}" data-i=${i}>${esc(z.n)}</span>`).join('');
 $('#ch').innerHTML=(s.ch||[]).map((c,i)=>`<div class=cc><button data-x=${i}>×</button>${csvg(c)}</div>`).join('')}
 function csvg(ch){const g=pr(ch.rg),rows=[];for(let r=g.r1;r<=g.r2;r++){const o=[];for(let c=g.c1;c<=g.c2;c++)o.push(getVal(S.a,key(r,c)));rows.push(o)}
@@ -143,8 +146,8 @@ else{const all=ser.flat(),mx=Math.max(1,...all),mn=Math.min(0,...all),y=v=>H-P-(
 ser.forEach((s,j)=>{if(ch.t==='line')h+=`<polyline fill=none stroke="${K[j%6]}" stroke-width=2 points="${s.map((v,i)=>(P+(i+.5)*w)+','+y(v)).join(' ')}"/>`;else s.forEach((v,i)=>{const y0=y(0),y1=y(v);h+=`<rect x=${P+i*w+w*.1+j*bw} y=${Math.min(y0,y1)} width=${bw} height=${Math.abs(y0-y1)} fill="${K[j%6]}"/>`})});
 lab.forEach((l,i)=>h+=`<text x=${P+(i+.5)*w} y=${H-10} font-size=9 text-anchor=middle fill=currentColor>${esc(l.slice(0,8))}</text>`)}return h+'</svg>'}
 /* ---------- selection, editing ---------- */
-function paintSel(){drawSel();refHL();document.querySelectorAll('td.s,td.a').forEach(t=>t.className='');const q=rect();for(let r=q.r1;r<=q.r2;r++)for(let c=q.c1;c<=q.c2;c++){const t=document.getElementById(key(r,c));if(t)t.className='s'}const a=document.getElementById(key(sel.r1,sel.c1));if(a)a.className='a s';
-$('#nb').value=rs();const ce=sh().c[key(sel.r1,sel.c1)];$('#fx').value=ce?ce.v:'';const ns=[];let n=0;if((q.r2-q.r1+1)*(q.c2-q.c1+1)>1)each(k=>{const v=getVal(S.a,k);if(typeof v==='number')ns.push(v);if(v!=='')n++});const sm=ns.reduce((a,b)=>a+b,0);
+function paintSel(){drawSel();refHL();document.querySelectorAll('td.s,td.a').forEach(t=>t.classList.remove('s','a'));const q=rect();for(let r=q.r1;r<=q.r2;r++)for(let c=q.c1;c<=q.c2;c++){const t=document.getElementById(key(r,c));if(t)t.classList.add('s')}const a=document.getElementById(key(sel.r1,sel.c1));if(a)a.classList.add('a','s');
+$('#nb').value=rs();showNoteSel();const ce=sh().c[key(sel.r1,sel.c1)];$('#fx').value=ce?ce.v:'';const ns=[];let n=0;if((q.r2-q.r1+1)*(q.c2-q.c1+1)>1)each(k=>{const v=getVal(S.a,k);if(typeof v==='number')ns.push(v);if(v!=='')n++});const sm=ns.reduce((a,b)=>a+b,0);
 $('#st').textContent=n?`Count: ${n}   Sum: ${+sm.toPrecision(12)}   Average: ${ns.length?+(sm/ns.length).toPrecision(12):'–'}   Min: ${ns.length?Math.min(...ns):'–'}   Max: ${ns.length?Math.max(...ns):'–'}`:'Ready · autosaved offline'}
 function mv(dr,dc,ext){const cl=(v,m)=>Math.max(1,Math.min(m,v));if(ext){sel.r2=cl(sel.r2+dr,NR);sel.c2=cl(sel.c2+dc,NC)}else{const r=cl(sel.r1+dr,NR),c=cl(sel.c1+dc,NC);sel={r1:r,c1:c,r2:r,c2:c}}paintSel();document.getElementById(ext?key(sel.r2,sel.c2):key(sel.r1,sel.c1))?.scrollIntoView({block:'nearest',inline:'nearest'})}
 function mut(f){$('#afo').hidden=true;undo.push(JSON.stringify(S));if(undo.length>60)undo.shift();redo=[];f();AST={};try{localStorage.setItem('osheets',JSON.stringify(S))}catch(e){}render()}
@@ -397,10 +400,25 @@ const KC=['#4e79a7','#e15759','#59a14f','#f28e2b','#b07aa1','#76b7b2'];
 function refHL(){const box=$('#rh'),el=ei();box.innerHTML='';if(!el){hint.hidden=true;ac.hidden=true;return}if(el.value[0]!=='=')return;const re=/(?<![\w.!'$])(\$?[A-Za-z]{1,3}\$?\d+)(?::(\$?[A-Za-z]{1,3}\$?\d+))?(?![\w(])/g;let m,i=0,h='';
 while((m=re.exec(el.value))){const g0=pr(m[0]);if(g0.r2>NR||g0.c2>NC)continue;const a=document.getElementById(key(g0.r1,g0.c1)),b=document.getElementById(key(g0.r2,g0.c2));if(!a||!b)continue;const c=KC[i++%6];h+=`<div style="left:${a.offsetLeft}px;top:${a.offsetTop}px;width:${b.offsetLeft+b.offsetWidth-a.offsetLeft}px;height:${b.offsetTop+b.offsetHeight-a.offsetTop}px;border-color:${c};background:${c}22"></div>`}box.innerHTML=h}
 /* touch selection */
-let tT,tSel=false,tTd=null;const selTo=t=>{if(t){sel.r2=+t.dataset.r;sel.c2=+t.dataset.c;paintSel()}};
-g.addEventListener('touchstart',e=>{tTd=e.target.closest('td');tSel=false;clearTimeout(tT);if(!tTd)return;const go=()=>{tSel=true;sel={r1:+tTd.dataset.r,c1:+tTd.dataset.c,r2:+tTd.dataset.r,c2:+tTd.dataset.c};paintSel();navigator.vibrate&&navigator.vibrate(10)};if(selMode&&!editing)go();else tT=setTimeout(go,350)},{passive:true});
-g.addEventListener('touchmove',e=>{if(!tSel){clearTimeout(tT);return}if(e.cancelable)e.preventDefault();const p=e.touches[0];selTo(document.elementFromPoint(p.clientX,p.clientY)?.closest('td'))},{passive:false});
-g.addEventListener('touchend',()=>{clearTimeout(tT);tSel=false});
+
+/* touch / pen drag selection (finger drag selects like a mouse; two fingers scroll) */
+let tT,tSel=false,tTd=null,tMid=null,tPt=null,tScroll=false,tTwo=false,tPend=null;const selTo=x=>{if(x){sel.r2=+x.dataset.r;sel.c2=+x.dataset.c;paintSel()}};
+g.addEventListener('touchstart',e=>{if(e.touches.length>1){tTwo=true;tPend=null;tSel=false;clearTimeout(tT);tMid=[(e.touches[0].clientX+e.touches[1].clientX)/2,(e.touches[0].clientY+e.touches[1].clientY)/2];return}tMid=null;tTd=e.target.closest('td');tSel=false;clearTimeout(tT);if(!tTd||ei())return;
+const go=()=>{tSel=true;const r=+tTd.dataset.r,c=+tTd.dataset.c;sel=e.shiftKey?{...sel,r2:r,c2:c}:{r1:r,c1:c,r2:r,c2:c};paintSel();navigator.vibrate&&navigator.vibrate(8)};if(tScroll)tT=setTimeout(go,350);else tPend=[e.touches[0].clientX,e.touches[0].clientY]},{passive:true});
+g.addEventListener('touchmove',e=>{if(e.touches.length>1&&tMid){if(e.cancelable)e.preventDefault();const m=[(e.touches[0].clientX+e.touches[1].clientX)/2,(e.touches[0].clientY+e.touches[1].clientY)/2],gw=$('#gw');gw.scrollLeft-=m[0]-tMid[0];gw.scrollTop-=m[1]-tMid[1];tMid=m;return}
+const p=e.touches[0];tPt=[p.clientX,p.clientY];if(!tSel&&tPend&&tTd&&!tTwo&&Math.hypot(p.clientX-tPend[0],p.clientY-tPend[1])>8){tSel=true;tPend=null;const r=+tTd.dataset.r,c=+tTd.dataset.c;sel={r1:r,c1:c,r2:r,c2:c};paintSel()}if(!tSel){clearTimeout(tT);return}if(e.cancelable)e.preventDefault();selTo(document.elementFromPoint(p.clientX,p.clientY)?.closest('td'))},{passive:false});
+g.addEventListener('touchend',e=>{if((tSel||tTwo)&&e.cancelable)e.preventDefault();clearTimeout(tT);tSel=false;tPend=null;if(!e.touches.length){tMid=null;tTwo=false}},{passive:false});
+document.addEventListener('mousemove',e=>{tPt=[e.clientX,e.clientY]});
+setInterval(()=>{if(!tPt||!(tSel||drag))return;const gw=$('#gw'),gr=gw.getBoundingClientRect(),[x,y]=tPt;let dx=0,dy=0;if(y>gr.bottom-30)dy=16;else if(y<gr.top+50)dy=-16;if(x>gr.right-30)dx=16;else if(x<gr.left+60)dx=-16;
+if(dx||dy){gw.scrollLeft+=dx;gw.scrollTop+=dy;selTo(document.elementFromPoint(Math.min(Math.max(x,gr.left+62),gr.right-31),Math.min(Math.max(y,gr.top+52),gr.bottom-31))?.closest('td'))}},60);
+/* cell notes: red marker on the cell, note box beside it when the cell is pressed/hovered */
+const nbx=$('#nbx'),nta=nbx.querySelector('textarea');let nk=null;
+function saveNote(){if(!nk||nbx.hidden)return;const ce=sh().c[nk],v=nta.value.trim();if(!ce||(ce.n||'')===v)return;undo.push(JSON.stringify(S));redo=[];if(v)ce.n=v;else delete ce.n;sv();const td=document.getElementById(nk);if(td){td.classList.toggle('nt',!!v);if(v)td.title=v;else td.removeAttribute('title')}}
+function showNote(k){if(k!==nk)saveNote();const ce=k&&sh().c[k],td=k&&document.getElementById(k);if(!ce||!ce.n||!td){nbx.hidden=true;nk=null;return}nk=k;if(document.activeElement!==nta)nta.value=ce.n;nbx.hidden=false;
+const gw=$('#gw'),w=nbx.offsetWidth||200;let l=td.offsetLeft+td.offsetWidth+8;if(l+w>(gw.scrollLeft+gw.clientWidth)/zoom)l=Math.max(0,td.offsetLeft-w-8);nbx.style.left=l+'px';nbx.style.top=td.offsetTop+'px'}
+function showNoteSel(){const q=rect();showNote(q.r1===q.r2&&q.c1===q.c2?key(q.r1,q.c1):null)}
+nta.addEventListener('blur',saveNote);nta.addEventListener('keydown',e=>{if(e.key==='Escape')nta.blur();e.stopPropagation()});
+if(matchMedia('(hover:hover)').matches){g.addEventListener('mouseover',e=>{if(drag||pt||nbx.matches(':focus-within'))return;const td=e.target.closest('td.nt');if(td)showNote(td.id)});g.addEventListener('mouseout',e=>{if(!nbx.matches(':focus-within')&&e.target.closest&&e.target.closest('td.nt'))showNoteSel()})}
 /* auto-fill (drag the handle at the selection corner) */
 const SER=[['Mon','Tue','Wed','Thu','Fri','Sat','Sun'],['Monday','Tuesday','Wednesday','Thursday','Friday','Saturday','Sunday'],['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'],['January','February','March','April','May','June','July','August','September','October','November','December']];
 const isN=v=>v!==''&&v[0]!=='='&&!isNaN(v);
@@ -426,6 +444,6 @@ const u=fd.tg?{r1:Math.min(s.r1,fd.tg.r1),r2:Math.max(s.r2,fd.tg.r2),c1:Math.min
 fh.addEventListener('pointerup',()=>{if(!fd)return;const f=fd;fd=null;$('#sb').classList.remove('fp');if(f.tg)doFill(f.src,f.tg,'auto',true);else drawSel()});
 fh.addEventListener('dblclick',()=>{const s=rect(),c=s.c1>1?s.c1-1:s.c2+1,has=r=>{const x=sh().c[key(r,c)];return x&&String(x.v)!==''};let r=s.r2;while(r<NR&&has(r+1))r++;if(r>s.r2)doFill(s,{r1:s.r2+1,r2:r,c1:s.c1,c2:s.c2},'auto',true)});
 const kd=k=>document.body.dispatchEvent(new KeyboardEvent('keydown',{key:k,ctrlKey:true,bubbles:true}));
-Object.assign(A,{fd:()=>kd('d'),fr:()=>kd('r'),smode:()=>{selMode=!selMode;document.querySelector('[data-a=smode]').classList.toggle('on',selMode)}});
+Object.assign(A,{fd:()=>kd('d'),fr:()=>kd('r'),smode:()=>{tScroll=!tScroll;$('#gw').classList.toggle('ts',tScroll);document.querySelector('[data-a=smode]').classList.toggle('on',tScroll)}});
 render();
 </script></body></html>
